@@ -45,6 +45,7 @@ class Application extends React.Component {
       maxFrames: 0,
       frames: [],
       columns: 2,
+      rows: 4,
       glueWidth: 10,
     };
   }
@@ -73,12 +74,9 @@ class Application extends React.Component {
     const { video, canvas, context } = this.state;
 
     const step = time => () => new Promise((resolve, reject) => {
-      console.log('starting', time);
       video.onseeked = () => {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const url = canvas.toDataURL();
-
-        console.log('done', time);
 
         this.setState(
           { frames: [...this.state.frames, url] },
@@ -91,7 +89,6 @@ class Application extends React.Component {
 
     const attachSource = url => new Promise((resolve, reject) => {
       video.src = url;
-      console.log('attaching');
       video.onloadeddata = () => resolve();
       video.load();
     });
@@ -109,12 +106,19 @@ class Application extends React.Component {
   }
 
   render() {
-    const { frames, maxFrames, columns, padding, glueWidth } = this.state;
+    const { frames, maxFrames, columns, rows, padding, glueWidth } = this.state;
 
     const style = {
       width: `${100/columns}%`,
     };
 
+    const pageCount = rows * columns;
+    const pages = [];
+
+    for (let i = 0; i < frames.length; i += pageCount)
+      pages.push(frames.slice(i, i + pageCount));
+
+    let index = 1;
     return (
       <div className="container">
         <div className="ui">
@@ -137,6 +141,13 @@ class Application extends React.Component {
             onChange={(e, columns) => this.setState({ columns })}
           />
           <Slider
+            min={2}
+            max={12}
+            step={1}
+            value={rows}
+            onChange={(e, rows) => this.setState({ rows })}
+          />
+          <Slider
             min={0}
             max={30}
             value={padding}
@@ -149,22 +160,25 @@ class Application extends React.Component {
             onChange={(e, glueWidth) => this.setState({ glueWidth })}
           />
         </div>
-        <div
-          className="page"
-          style={{
-            padding: `${padding}%`,
-          }}
-        >
-          {frames.map((url, index) =>
-            <Frame
-              key={index}
-              index={index}
-              src={url}
-              width={100/columns}
-              glueWidth={glueWidth}
-            />
-          )}
-        </div>
+        {pages.map((frames, pageIndex) =>
+          <div
+            key={pageIndex}
+            className="page"
+            style={{
+              padding: `${padding}%`,
+            }}
+          >
+            {frames.map(url =>
+              <Frame
+                key={index}
+                index={++index}
+                src={url}
+                width={100/columns}
+                glueWidth={glueWidth}
+              />
+            )}
+          </div>
+        )}
       </div>
     );
   }

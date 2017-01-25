@@ -16,22 +16,24 @@ html, body {
   }
 }
 
+@page mainpage {
+  size: auto;
+}
+
 .page {
   position: relative;
 
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
+  align-content: center;
   align-items: center;
 
   box-sizing: border-box;
 
   @media print {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    page: mainpage;
+    page-break-after: always;
   }
 
   @media screen {
@@ -45,7 +47,6 @@ html, body {
   flex: 0 1 auto;
 
   box-sizing: border-box;
-  border: 1px solid black;
 
   justify-content: space-around;
 
@@ -54,7 +55,9 @@ html, body {
     text-align: center;
 
     box-sizing: border-box;
-    padding: 0.5em;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    padding: 0.5em 0;
     font-size: 2em;
 
     color: #efefef;
