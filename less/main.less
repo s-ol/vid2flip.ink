@@ -21,7 +21,7 @@ html, body {
 
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 
   box-sizing: border-box;
@@ -36,5 +36,32 @@ html, body {
 
   @media screen {
     border: 2px solid #212121;
+  }
+}
+
+.frame {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+
+  box-sizing: border-box;
+  border: 1px solid black;
+
+  justify-content: space-around;
+
+  .glue {
+    flex: 0 0 auto;
+    text-align: center;
+
+    box-sizing: border-box;
+    padding: 0.5em;
+    font-size: 2em;
+
+    color: #efefef;
+    background: #676767;
+  }
+
+  img {
+    width: 100%;
   }
 }

@@ -15,6 +15,25 @@ const readAsDataUrl = file => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
+const Frame = ({ index, src, width, glueWidth }) =>
+  <div className="frame"
+    style={{
+      width: `${width}%`,
+    }}
+  >
+    <div
+      className="glue"
+      style={{
+        width: `${glueWidth}%`,
+      }}
+    >
+      {index}
+    </div>
+    <div className="wrapper">
+      <img src={src} />
+    </div>
+  </div>
+
 class Application extends React.Component {
   constructor(props) {
     super(props);
@@ -26,6 +45,7 @@ class Application extends React.Component {
       maxFrames: 0,
       frames: [],
       columns: 2,
+      glueWidth: 10,
     };
   }
 
@@ -79,6 +99,8 @@ class Application extends React.Component {
     let promise = readAsDataUrl(files[0])
       .then(attachSource)
       .then(() => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         this.setState({ frames: [], maxFrames: video.duration / 0.5 });
         for (let time = 0; time < video.duration; time += 0.5) {
           promise = promise.then(step(time));
@@ -87,7 +109,7 @@ class Application extends React.Component {
   }
 
   render() {
-    const { frames, maxFrames, columns, padding } = this.state;
+    const { frames, maxFrames, columns, padding, glueWidth } = this.state;
 
     const style = {
       width: `${100/columns}%`,
@@ -120,6 +142,12 @@ class Application extends React.Component {
             value={padding}
             onChange={(e, padding) => this.setState({ padding })}
           />
+          <Slider
+            min={0}
+            max={30}
+            value={glueWidth}
+            onChange={(e, glueWidth) => this.setState({ glueWidth })}
+          />
         </div>
         <div
           className="page"
@@ -128,10 +156,12 @@ class Application extends React.Component {
           }}
         >
           {frames.map((url, index) =>
-            <img
+            <Frame
               key={index}
+              index={index}
               src={url}
-              style={style}
+              width={100/columns}
+              glueWidth={glueWidth}
             />
           )}
         </div>
